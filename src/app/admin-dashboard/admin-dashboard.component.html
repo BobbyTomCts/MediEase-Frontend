@@ -1,0 +1,145 @@
+<div class="dashboard">
+  <!-- Header -->
+  <div class="header">
+    <div class="logo">
+      <h2>MediEase</h2>
+    </div>
+    <div class="user-info">
+      <span class="welcome">{{ userName }} <span class="admin-badge">Admin</span></span>
+      <button class="btn-logout" (click)="logout()">Logout</button>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="content">
+    <!-- Page Title -->
+    <div class="page-header">
+      <h1>Insurance Claims Management</h1>
+      <p>Review and manage all insurance claim requests</p>
+    </div>
+
+    <!-- Success/Error Message -->
+    <div class="message" *ngIf="message">
+      {{ message }}
+    </div>
+
+    <!-- Filter Section -->
+    <div class="filter-section">
+      <div class="filter-card">
+        <h3>Filter Requests</h3>
+        
+        <div class="filter-group">
+          <!-- Status Filter -->
+          <div class="filter-item">
+            <label for="statusFilter">Status</label>
+            <select 
+              id="statusFilter" 
+              [(ngModel)]="selectedStatus" 
+              (change)="onFilterChange()"
+              class="filter-select"
+            >
+              <option *ngFor="let status of statusOptions" [value]="status">
+                {{ status }} ({{ getRequestCountByStatus(status) }})
+              </option>
+            </select>
+          </div>
+
+          <!-- Start Date Filter -->
+          <div class="filter-item">
+            <label for="startDate">From Date</label>
+            <input 
+              type="date" 
+              id="startDate" 
+              [(ngModel)]="startDate" 
+              (change)="onFilterChange()"
+              class="filter-input"
+            />
+          </div>
+
+          <!-- End Date Filter -->
+          <div class="filter-item">
+            <label for="endDate">To Date</label>
+            <input 
+              type="date" 
+              id="endDate" 
+              [(ngModel)]="endDate" 
+              (change)="onFilterChange()"
+              class="filter-input"
+            />
+          </div>
+
+          <!-- Clear Filter Button -->
+          <div class="filter-item">
+            <button class="btn-clear-filter" (click)="clearFilters()">Clear Filters</button>
+          </div>
+        </div>
+
+        <!-- Filter Summary -->
+        <div class="filter-summary" *ngIf="selectedStatus !== 'ALL' || startDate || endDate">
+          <span class="summary-text">
+            Showing {{ filteredRequests.length }} of {{ requests.length }} requests
+            <span *ngIf="selectedStatus !== 'ALL'"> | Status: {{ selectedStatus }}</span>
+            <span *ngIf="startDate"> | From: {{ startDate }}</span>
+            <span *ngIf="endDate"> | To: {{ endDate }}</span>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading -->
+    <div class="loading" *ngIf="loading">
+      <p>Loading requests...</p>
+    </div>
+
+    <!-- Requests Table -->
+    <div class="table-container" *ngIf="!loading">
+      <table class="requests-table">
+        <thead>
+          <tr>
+            <th>Request ID</th>
+            <th>Employee ID</th>
+            <th>Requested Amount</th>
+            <th>Approved Amount</th>
+            <th>Copay</th>
+            <th>Status</th>
+            <th>Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let request of filteredRequests">
+            <td>#{{ request.requestId }}</td>
+            <td>{{ request.empId }}</td>
+            <td>{{ formatCurrency(request.requestAmount) }}</td>
+            <td>{{ request.approvedAmount ? formatCurrency(request.approvedAmount) : '-' }}</td>
+            <td>{{ request.copayAmount ? formatCurrency(request.copayAmount) : '-' }}</td>
+            <td>
+              <span class="status-badge" [ngClass]="getStatusClass(request.status)">
+                {{ request.status }}
+              </span>
+            </td>
+            <td>{{ formatDate(request.createdAt || '') }}</td>
+            <td>
+              <div class="action-buttons" *ngIf="request.status === 'PENDING'">
+                <button class="btn-approve" (click)="approveRequest(request.requestId)">
+                  Approve
+                </button>
+                <button class="btn-reject" (click)="rejectRequest(request.requestId)">
+                  Reject
+                </button>
+              </div>
+              <div class="no-action" *ngIf="request.status !== 'PENDING'">
+                <span>No actions available</span>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Empty State -->
+      <div class="empty-state" *ngIf="filteredRequests.length === 0">
+        <p>No insurance requests found matching your filters</p>
+      </div>
+    </div>
+  </div>
+</div>
