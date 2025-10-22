@@ -1,0 +1,841 @@
+/* User Home Component - Stripe-Inspired Design */
+
+/* ============================================
+   NAVBAR
+   ============================================ */
+.navbar {
+  background: var(--color-bg-primary);
+  border-bottom: 1px solid var(--color-border);
+  padding: 0 40px;
+  height: 64px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 20px 0;
+  transition: opacity var(--transition-fast);
+}
+
+.logo:hover {
+  opacity: 0.8;
+}
+
+.logo-text {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  letter-spacing: -0.03em;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  font-family: var(--font-family);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  position: relative;
+}
+
+.nav-btn:hover {
+  color: var(--color-text-primary);
+  background: var(--color-bg-secondary);
+}
+
+.nav-btn.active {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.nav-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 14px;
+  right: 14px;
+  height: 2px;
+  background: var(--color-primary);
+}
+
+.btn-logout {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  margin-left: 8px;
+  background: transparent;
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  font-family: var(--font-family);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-logout svg {
+  width: 16px;
+  height: 16px;
+}
+
+.btn-logout:hover {
+  background: var(--color-bg-secondary);
+  border-color: var(--color-text-tertiary);
+  color: var(--color-text-primary);
+}
+
+/* ============================================
+   SUCCESS MESSAGE
+   ============================================ */
+.success-message {
+  position: fixed;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--color-success);
+  color: white;
+  padding: 14px 24px;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  box-shadow: var(--shadow-lg);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  animation: slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.success-icon {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+/* ============================================
+   MAIN CONTENT
+   ============================================ */
+.main-content {
+  min-height: calc(100vh - 70px);
+  background: var(--color-bg-secondary);
+  padding: var(--spacing-3xl) 0;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-xl);
+}
+
+/* ============================================
+   WELCOME SECTION
+   ============================================ */
+.welcome-section {
+  margin-bottom: var(--spacing-2xl);
+}
+
+.welcome-section h1 {
+  font-size: var(--font-size-3xl);
+  font-weight: 800;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-sm);
+  letter-spacing: -0.04em;
+}
+
+.welcome-section p {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+}
+
+/* ============================================
+   CARDS
+   ============================================ */
+.insurance-card,
+.no-insurance-card,
+.loading-card,
+.claim-section,
+.claims-history-section,
+.no-data-card {
+  background: var(--color-bg-primary);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-xl);
+  margin-bottom: var(--spacing-xl);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border);
+  transition: all var(--transition-base);
+}
+
+.insurance-card:hover,
+.claim-section:hover,
+.claims-history-section:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.card-header,
+.section-header {
+  margin-bottom: var(--spacing-lg);
+}
+
+.card-header h2,
+.section-header h2 {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+}
+
+.icon {
+  font-size: 24px;
+}
+
+/* ============================================
+   INSURANCE DETAILS
+   ============================================ */
+.insurance-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--spacing-lg);
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.detail-label {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--color-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.detail-value {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.detail-value.amount {
+  font-size: var(--font-size-2xl);
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+/* ============================================
+   NO INSURANCE / LOADING CARDS
+   ============================================ */
+.no-insurance-card,
+.loading-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-3xl);
+  text-align: center;
+}
+
+.no-insurance-card .icon,
+.loading-card .icon,
+.no-data-card .icon {
+  font-size: 48px;
+  margin-bottom: var(--spacing-md);
+  opacity: 0.5;
+}
+
+.no-insurance-card h3,
+.no-data-card h3 {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.no-insurance-card p,
+.loading-card p,
+.no-data-card p {
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+}
+
+/* Spinner */
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--color-border);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: var(--spacing-md);
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================
+   CLAIM BUTTON
+   ============================================ */
+.claim-button-container {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.btn-claim {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 24px;
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  font-family: var(--font-family);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-claim:hover {
+  background: var(--color-primary-dark);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.btn-claim:active {
+  transform: translateY(0);
+}
+
+.btn-icon {
+  font-size: 18px;
+}
+
+/* ============================================
+   CLAIMS TABLE
+   ============================================ */
+.claims-table-container {
+  overflow-x: auto;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+}
+
+.claims-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+}
+
+.claims-table thead {
+  background: var(--color-bg-secondary);
+}
+
+.claims-table th {
+  text-align: left;
+  padding: 14px 16px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.claims-table td {
+  padding: 16px;
+  color: var(--color-text-secondary);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.claims-table tbody tr {
+  transition: background var(--transition-fast);
+}
+
+.claims-table tbody tr:hover {
+  background: var(--color-bg-secondary);
+}
+
+.claims-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.amount-cell {
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+/* Status Badges */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.status-badge.status-pending {
+  background: rgba(255, 184, 0, 0.1);
+  color: var(--color-warning);
+}
+
+.status-badge.status-approved {
+  background: rgba(0, 217, 36, 0.1);
+  color: var(--color-success);
+}
+
+.status-badge.status-rejected {
+  background: rgba(255, 56, 96, 0.1);
+  color: var(--color-error);
+}
+
+/* ============================================
+   NO DATA CARD
+   ============================================ */
+.no-data-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--spacing-3xl);
+  text-align: center;
+}
+
+/* ============================================
+   POPUP / MODAL
+   ============================================ */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(10, 37, 64, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.popup-content {
+  background: var(--color-bg-primary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: popupSlide 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes popupSlide {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-lg) var(--spacing-xl);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.popup-header h2 {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.btn-close {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg-tertiary);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 20px;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-close:hover {
+  background: var(--color-border);
+  color: var(--color-text-primary);
+}
+
+.popup-body {
+  padding: var(--spacing-xl);
+}
+
+.popup-footer {
+  display: flex;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg) var(--spacing-xl);
+  border-top: 1px solid var(--color-border);
+  justify-content: flex-end;
+}
+
+/* ============================================
+   INFO BOX
+   ============================================ */
+.info-box {
+  display: flex;
+  gap: 12px;
+  padding: 14px 16px;
+  background: rgba(0, 212, 255, 0.05);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--spacing-lg);
+}
+
+.info-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.info-text {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+.info-text strong {
+  color: var(--color-text-primary);
+  font-weight: 600;
+}
+
+/* ============================================
+   FORM IN POPUP
+   ============================================ */
+.popup-body .form-group {
+  margin-bottom: var(--spacing-lg);
+}
+
+.popup-body .form-group:last-child {
+  margin-bottom: 0;
+}
+
+.popup-body .form-group label {
+  display: block;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.popup-body .form-group input,
+.popup-body .form-group select {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: var(--font-size-base);
+  font-family: var(--font-family);
+  color: var(--color-text-primary);
+  background: var(--color-bg-primary);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+  outline: none;
+}
+
+.popup-body .form-group input::placeholder {
+  color: var(--color-text-tertiary);
+}
+
+.popup-body .form-group input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(99, 91, 255, 0.1);
+}
+
+.popup-body .form-group input:disabled {
+  background: var(--color-bg-secondary);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* ============================================
+   ERROR MESSAGE
+   ============================================ */
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: rgba(255, 56, 96, 0.1);
+  color: var(--color-error);
+  border: 1px solid rgba(255, 56, 96, 0.2);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  margin-top: var(--spacing-md);
+}
+
+.error-icon {
+  font-size: 18px;
+}
+
+/* ============================================
+   BUTTONS
+   ============================================ */
+.btn-primary,
+.btn-secondary {
+  padding: 10px 20px;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  font-family: var(--font-family);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  min-width: 100px;
+}
+
+.btn-primary {
+  background: var(--color-primary);
+  color: white;
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--color-primary-dark);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: var(--color-border);
+}
+
+.btn-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+@media (max-width: 768px) {
+  .navbar {
+    padding: 0 20px;
+  }
+  
+  .logo-text {
+    font-size: 18px;
+  }
+  
+  .nav-btn span:not(.nav-icon) {
+    display: none;
+  }
+
+  .btn-logout span {
+    display: none;
+  }
+
+  .btn-logout {
+    padding: 8px 12px;
+  }
+  
+  .main-content {
+    padding: var(--spacing-xl) 0;
+  }
+  
+  .container {
+    padding: 0 var(--spacing-md);
+  }
+  
+  .welcome-section h1 {
+    font-size: var(--font-size-2xl);
+  }
+  
+  .insurance-card,
+  .no-insurance-card,
+  .loading-card,
+  .claim-section,
+  .claims-history-section {
+    padding: var(--spacing-lg);
+  }
+  
+  .insurance-details {
+    grid-template-columns: 1fr;
+  }
+  
+  .claims-table {
+    font-size: var(--font-size-xs);
+  }
+  
+  .claims-table th,
+  .claims-table td {
+    padding: 10px 12px;
+  }
+  
+  .popup-content {
+    width: 95%;
+  }
+  
+  .popup-header,
+  .popup-body,
+  .popup-footer {
+    padding: var(--spacing-md);
+  }
+}
+
+/* ============================================
+   COPAY INFO BOX
+   ============================================ */
+.copay-info-box {
+  display: flex;
+  gap: 12px;
+  padding: 12px 14px;
+  background: rgba(255, 184, 0, 0.08);
+  border: 1px solid rgba(255, 184, 0, 0.2);
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--spacing-lg);
+}
+
+.copay-info-box .info-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+  color: var(--color-warning);
+}
+
+.copay-info-box .info-text {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.copay-info-box strong {
+  color: var(--color-text-primary);
+  display: block;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.copay-info-box p {
+  margin: 0;
+  font-size: var(--font-size-xs);
+}
+
+/* ============================================
+   COPAY CALCULATION DISPLAY
+   ============================================ */
+.copay-calculation {
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: var(--spacing-lg);
+  margin-top: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+}
+
+.calculation-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-border);
+  font-size: var(--font-size-sm);
+}
+
+.calculation-row:last-child {
+  border-bottom: none;
+}
+
+.calculation-row.approved {
+  background: rgba(0, 217, 36, 0.05);
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  border-bottom: none;
+  margin-top: 8px;
+}
+
+.calculation-row.copay {
+  background: rgba(255, 184, 0, 0.03);
+  padding: 10px 0;
+}
+
+.calculation-row .label {
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.calculation-row .value {
+  color: var(--color-text-primary);
+  font-weight: 600;
+}
+
+.calculation-row.approved .label,
+.calculation-row.approved .value {
+  color: var(--color-success);
+}
