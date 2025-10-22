@@ -1,0 +1,174 @@
+/* ========================================
+   MediEase - Stripe-Inspired Design System
+   ======================================== */
+
+/* Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+/* CSS Variables - Stripe-Inspired Color Palette */
+:root {
+  /* Primary Colors */
+  --color-primary: #635BFF;
+  --color-primary-hover: #0A2540;
+  --color-primary-light: #7A73FF;
+  --color-primary-dark: #4F46E5;
+  
+  /* Accent Colors */
+  --color-accent: #00D4FF;
+  --color-success: #00D924;
+  --color-warning: #FFB800;
+  --color-error: #FF3860;
+  
+  /* Neutral Colors */
+  --color-text-primary: #0A2540;
+  --color-text-secondary: #425466;
+  --color-text-tertiary: #8898AA;
+  --color-border: #E3E8EE;
+  --color-bg-primary: #FFFFFF;
+  --color-bg-secondary: #F7FAFC;
+  --color-bg-tertiary: #EDF2F7;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(50, 50, 93, 0.05), 0 1px 0 rgba(0, 0, 0, 0.02);
+  --shadow-md: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 13px 27px -5px rgba(50, 50, 93, 0.25), 0 8px 16px -8px rgba(0, 0, 0, 0.3);
+  --shadow-xl: 0 30px 60px -12px rgba(50, 50, 93, 0.25), 0 18px 36px -18px rgba(0, 0, 0, 0.3);
+  
+  /* Border Radius */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+  --spacing-3xl: 64px;
+  
+  /* Typography */
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-base: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 24px;
+  --font-size-2xl: 32px;
+  --font-size-3xl: 40px;
+  
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Reset & Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  line-height: 1.6;
+  color: var(--color-text-primary);
+  background: var(--color-bg-secondary);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-md);
+  letter-spacing: -0.02em;
+}
+
+h1 {
+  font-size: var(--font-size-3xl);
+  font-weight: 800;
+}
+
+h2 {
+  font-size: var(--font-size-2xl);
+}
+
+h3 {
+  font-size: var(--font-size-xl);
+}
+
+p {
+  color: var(--color-text-secondary);
+  line-height: 1.7;
+  margin-bottom: var(--spacing-md);
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+  cursor: pointer;
+}
+
+a:hover {
+  color: var(--color-primary-dark);
+}
+
+/* Utility Classes */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-lg);
+}
+
+.text-center {
+  text-align: center;
+}
+
+.mt-1 { margin-top: var(--spacing-sm); }
+.mt-2 { margin-top: var(--spacing-md); }
+.mt-3 { margin-top: var(--spacing-lg); }
+.mt-4 { margin-top: var(--spacing-xl); }
+
+.mb-1 { margin-bottom: var(--spacing-sm); }
+.mb-2 { margin-bottom: var(--spacing-md); }
+.mb-3 { margin-bottom: var(--spacing-lg); }
+.mb-4 { margin-bottom: var(--spacing-xl); }
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-tertiary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-text-tertiary);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-secondary);
+}
+
+/* Selection */
+::selection {
+  background: var(--color-primary);
+  color: white;
+}

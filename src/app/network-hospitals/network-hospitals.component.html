@@ -1,0 +1,154 @@
+<div class="hospitals-container">
+  <!-- Header -->
+  <div class="header">
+    <button class="back-btn" (click)="goBack()">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <h1>Network Hospitals</h1>
+    <span class="hospital-count">{{ filteredHospitals.length }} hospitals</span>
+  </div>
+
+  <!-- Search and Filters -->
+  <div class="filters-section">
+    <div class="search-box">
+      <svg class="search-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path d="M9 17A8 8 0 1 0 9 1a8 8 0 0 0 0 16zM18 18l-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <input 
+        type="text" 
+        [(ngModel)]="searchTerm" 
+        (ngModelChange)="filterHospitals()"
+        placeholder="Search by hospital name, city, or specialty..."
+        class="search-input"
+      />
+    </div>
+
+    <div class="filter-row">
+      <select [(ngModel)]="selectedState" (ngModelChange)="filterHospitals()" class="filter-select">
+        <option value="">All States</option>
+        <option *ngFor="let state of states" [value]="state">{{ state }}</option>
+      </select>
+
+      <select [(ngModel)]="selectedCity" (ngModelChange)="filterHospitals()" class="filter-select">
+        <option value="">All Cities</option>
+        <option *ngFor="let city of cities" [value]="city">{{ city }}</option>
+      </select>
+
+      <button class="clear-btn" (click)="clearFilters()">Clear Filters</button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading hospitals...</p>
+  </div>
+
+  <!-- Hospitals Grid -->
+  <div *ngIf="!isLoading && filteredHospitals.length > 0" class="hospitals-grid">
+    <div 
+      *ngFor="let hospital of filteredHospitals" 
+      class="hospital-card"
+      [class.expanded]="selectedHospital?.id === hospital.id"
+      (click)="toggleHospital(hospital)"
+    >
+      <!-- Card Header (Always Visible) -->
+      <div class="card-header">
+        <div class="hospital-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2L2 7v10c0 5.5 3.8 9.7 10 11 6.2-1.3 10-5.5 10-11V7l-10-5z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M12 8v8M8 12h8" stroke="white" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="hospital-info">
+          <h3 class="hospital-name">{{ hospital.hospitalName }}</h3>
+          <p class="hospital-location">{{ hospital.city }}, {{ hospital.state }}</p>
+        </div>
+        <svg 
+          class="expand-icon" 
+          [class.rotated]="selectedHospital?.id === hospital.id"
+          width="20" 
+          height="20" 
+          viewBox="0 0 20 20" 
+          fill="none"
+        >
+          <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+
+      <!-- Card Details (Expandable) -->
+      <div class="card-details" *ngIf="selectedHospital?.id === hospital.id">
+        <div class="details-grid">
+          <div class="detail-item">
+            <svg class="detail-icon" width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" stroke="currentColor" stroke-width="2"/>
+              <circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="2"/>
+            </svg>
+            <div>
+              <p class="detail-label">Address</p>
+              <p class="detail-value">{{ hospital.address }}</p>
+            </div>
+          </div>
+
+          <div class="detail-item">
+            <svg class="detail-icon" width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" stroke="currentColor" stroke-width="2"/>
+            </svg>
+            <div>
+              <p class="detail-label">Phone</p>
+              <p class="detail-value">
+                <a href="tel:{{ hospital.phone }}" class="phone-link">{{ hospital.phone }}</a>
+              </p>
+            </div>
+          </div>
+
+          <div class="detail-item full-width">
+            <svg class="detail-icon" width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+              <polyline points="12 6 12 12 16 14" stroke="currentColor" stroke-width="2"/>
+            </svg>
+            <div>
+              <p class="detail-label">Specialties</p>
+              <div class="specialties">
+                <span *ngFor="let specialty of getSpecialtiesArray(hospital.specialties)" class="specialty-tag">
+                  {{ specialty }}
+                </span>
+                <span *ngIf="!hospital.specialties" class="specialty-tag">N/A</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="actions">
+          <button class="btn-action primary" (click)="getDirections(hospital); $event.stopPropagation()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" stroke="currentColor" stroke-width="2"/>
+              <circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="2"/>
+            </svg>
+            Get Directions
+          </button>
+          <button class="btn-action secondary" (click)="callHospital(hospital.phone); $event.stopPropagation()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" stroke="currentColor" stroke-width="2"/>
+            </svg>
+            Call Hospital
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- No Results State -->
+  <div *ngIf="!isLoading && filteredHospitals.length === 0" class="no-results">
+    <svg width="64" height="64" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+      <path d="M8 15s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+    <h3>No hospitals found</h3>
+    <p>Try adjusting your filters or search term</p>
+    <button class="btn-action primary" (click)="clearFilters()">Clear All Filters</button>
+  </div>
+</div>

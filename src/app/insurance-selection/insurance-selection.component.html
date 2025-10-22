@@ -1,0 +1,113 @@
+<!-- Navbar -->
+<nav class="navbar">
+  <div class="nav-left">
+    <div class="logo">
+      <span class="logo-text">MediEase</span>
+    </div>
+  </div>
+  <div class="nav-right">
+    <span class="welcome-text">Welcome, {{ userName }}</span>
+    <button class="btn-logout" (click)="logout()">Logout</button>
+  </div>
+</nav>
+
+<!-- Main Content -->
+<div class="main-content">
+  <div class="container">
+    <!-- Header -->
+    <div class="header-section">
+      <h1>Choose Your Insurance Package</h1>
+      <p>Select the insurance package that best suits your needs</p>
+    </div>
+
+    <!-- Error Message -->
+    <div class="error-message" *ngIf="errorMessage">
+      <span class="error-icon">!</span>
+      {{ errorMessage }}
+    </div>
+
+    <!-- Loading State -->
+    <div class="loading-card" *ngIf="isLoadingPackages">
+      <div class="spinner"></div>
+      <p>Loading insurance packages...</p>
+    </div>
+
+    <!-- Packages Grid -->
+    <div class="packages-grid" *ngIf="!isLoadingPackages && packages.length > 0">
+      <div 
+        *ngFor="let package of packages" 
+        class="package-card"
+        [class.selected]="selectedPackageId === package.insuranceId"
+        (click)="selectPackage(package.insuranceId)"
+      >
+        <div class="package-header">
+          <h2>{{ package.packageName }}</h2>
+        </div>
+        
+        <div class="package-body">
+          <div class="coverage-amount">
+            <span class="label">Coverage Amount</span>
+            <span class="amount">{{ formatCurrency(package.amount) }}</span>
+          </div>
+          
+          <div class="package-features">
+            <div class="feature">
+              <span class="check-icon">•</span>
+              <span>Medical Expenses</span>
+            </div>
+            <div class="feature">
+              <span class="check-icon">•</span>
+              <span>Hospital Stays</span>
+            </div>
+            <div class="feature">
+              <span class="check-icon">•</span>
+              <span>Emergency Care</span>
+            </div>
+            <div class="feature" *ngIf="package.packageName !== 'Basic'">
+              <span class="check-icon">•</span>
+              <span>Specialist Consultations</span>
+            </div>
+            <div class="feature" *ngIf="package.packageName === 'Gold'">
+              <span class="check-icon">•</span>
+              <span>Premium Healthcare</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="package-footer">
+          <div class="selection-indicator" *ngIf="selectedPackageId === package.insuranceId">
+            <span>Selected</span>
+          </div>
+          <div class="selection-prompt" *ngIf="selectedPackageId !== package.insuranceId">
+            Click to select
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- No Packages -->
+    <div class="no-packages" *ngIf="!isLoadingPackages && packages.length === 0">
+      <h3>No Packages Available</h3>
+      <p>There are no insurance packages available at the moment. Please contact your administrator.</p>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons" *ngIf="!isLoadingPackages && packages.length > 0">
+      <button 
+        class="btn-proceed" 
+        [disabled]="!selectedPackageId"
+        (click)="proceedToDependants()"
+      >
+        Proceed to Add Dependants
+      </button>
+    </div>
+
+    <!-- Info Box -->
+    <div class="info-box">
+      <span class="info-icon">i</span>
+      <div class="info-text">
+        <strong>Next Steps:</strong> After selecting your package, you'll be able to add your dependants (family members) who will be covered under your insurance.
+      </div>
+    </div>
+  </div>
+</div>
