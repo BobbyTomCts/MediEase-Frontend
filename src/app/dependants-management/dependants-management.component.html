@@ -1,0 +1,209 @@
+<div class="dependants-container">
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="nav-left">
+      <h1 class="logo">MediEase</h1>
+    </div>
+    <div class="nav-right">
+      <button class="nav-btn" (click)="goBack()">Back</button>
+      <button class="btn-logout" (click)="logout()">Logout</button>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Header -->
+    <div class="header">
+      <h2>
+        <span *ngIf="isSetupMode">Complete Your Insurance Setup</span>
+        <span *ngIf="!isSetupMode">Manage Dependants</span>
+      </h2>
+      <p class="subtitle" *ngIf="isSetupMode">
+        Add your dependants to include them in your insurance coverage
+      </p>
+      <p class="subtitle" *ngIf="!isSetupMode">
+        Add, edit, or remove your dependants
+      </p>
+    </div>
+
+    <!-- Success/Error Messages -->
+    <div class="message success-message" *ngIf="successMessage">
+      ✓ {{ successMessage }}
+    </div>
+    <div class="message error-message" *ngIf="errorMessage">
+      ✗ {{ errorMessage }}
+    </div>
+
+    <!-- Loading -->
+    <div class="loading" *ngIf="isLoadingDependants">
+      <div class="spinner"></div>
+      <p>Loading dependants...</p>
+    </div>
+
+    <!-- Dependants List -->
+    <div class="dependants-section" *ngIf="!isLoadingDependants">
+      <!-- Add Dependant Button -->
+      <div class="add-btn-container">
+        <button class="add-btn" (click)="openAddForm()">
+          <span class="plus-icon">+</span>
+          Add Dependant
+        </button>
+      </div>
+
+      <!-- Dependants Grid -->
+      <div class="dependants-grid" *ngIf="dependants.length > 0">
+        <div class="dependant-card" *ngFor="let dependant of dependants">
+          <div class="dependant-header">
+            <div class="dependant-icon">
+              <span *ngIf="dependant.relation === 'Spouse'">💑</span>
+              <span *ngIf="dependant.relation === 'Child'">👶</span>
+              <span *ngIf="dependant.relation === 'Parent'">👴</span>
+              <span *ngIf="dependant.relation !== 'Spouse' && dependant.relation !== 'Child' && dependant.relation !== 'Parent'">👤</span>
+            </div>
+            <div class="dependant-info">
+              <h3>{{ dependant.name }}</h3>
+              <p class="relation">{{ dependant.relation }}</p>
+            </div>
+          </div>
+          
+          <div class="dependant-details">
+            <div class="detail-item">
+              <span class="label">Age:</span>
+              <span class="value">{{ dependant.age }} years</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Gender:</span>
+              <span class="value">{{ dependant.gender }}</span>
+            </div>
+          </div>
+
+          <div class="dependant-actions">
+            <button class="edit-btn" (click)="openEditForm(dependant)">
+              <span class="icon">✏️</span>
+              Edit
+            </button>
+            <button class="delete-btn" (click)="deleteDependant(dependant.id)">
+              <span class="icon">🗑️</span>
+              Remove
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- No Dependants Message -->
+      <div class="no-dependants" *ngIf="dependants.length === 0">
+        <div class="empty-icon">👥</div>
+        <p>No dependants added yet</p>
+        <p class="empty-subtitle" *ngIf="isSetupMode">
+          You can skip this step if you don't have any dependants
+        </p>
+      </div>
+    </div>
+
+    <!-- Action Buttons (Setup Mode) -->
+    <div class="action-buttons" *ngIf="isSetupMode && !isLoadingDependants">
+      <button class="skip-btn" (click)="skipDependants()" [disabled]="isCreatingInsurance">
+        Skip & Complete Setup
+      </button>
+      <button 
+        class="submit-btn" 
+        (click)="submitInsurance()" 
+        [disabled]="isCreatingInsurance || dependants.length === 0"
+        *ngIf="dependants.length > 0"
+      >
+        <span *ngIf="!isCreatingInsurance">Complete Setup</span>
+        <span *ngIf="isCreatingInsurance">Creating Insurance...</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Add/Edit Dependant Modal -->
+  <div class="modal-overlay" *ngIf="showDependantForm" (click)="closeForm()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>
+          <span *ngIf="!isEditMode">Add Dependant</span>
+          <span *ngIf="isEditMode">Edit Dependant</span>
+        </h3>
+        <button class="close-btn" (click)="closeForm()">×</button>
+      </div>
+
+      <form class="dependant-form" (ngSubmit)="saveDependant()">
+        <!-- Form Error -->
+        <div class="form-error" *ngIf="formError">
+          {{ formError }}
+        </div>
+
+        <!-- Name -->
+        <div class="form-group">
+          <label for="name">Name *</label>
+          <input 
+            type="text" 
+            id="name" 
+            [(ngModel)]="dependantForm.name" 
+            name="name"
+            placeholder="Enter dependant's name"
+            required
+          />
+        </div>
+
+        <!-- Age -->
+        <div class="form-group">
+          <label for="age">Age *</label>
+          <input 
+            type="number" 
+            id="age" 
+            [(ngModel)]="dependantForm.age" 
+            name="age"
+            placeholder="Enter age"
+            min="0"
+            required
+          />
+        </div>
+
+        <!-- Gender -->
+        <div class="form-group">
+          <label for="gender">Gender *</label>
+          <select 
+            id="gender" 
+            [(ngModel)]="dependantForm.gender" 
+            name="gender"
+            required
+          >
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            
+          </select>
+        </div>
+
+        <!-- Relation -->
+        <div class="form-group">
+          <label for="relation">Relation *</label>
+          <select 
+            id="relation" 
+            [(ngModel)]="dependantForm.relation" 
+            name="relation"
+            required
+          >
+            <option value="Spouse">Spouse</option>
+            <option value="Child">Child</option>
+            <option value="Parent">Parent</option>
+            <option value="Sibling">Sibling</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button type="button" class="cancel-btn" (click)="closeForm()">
+            Cancel
+          </button>
+          <button type="submit" class="save-btn">
+            <span *ngIf="!isEditMode">Add Dependant</span>
+            <span *ngIf="isEditMode">Save Changes</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

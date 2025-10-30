@@ -1,0 +1,224 @@
+<!-- Navbar -->
+<nav class="navbar">
+  <div class="nav-left">
+    <div class="logo" (click)="goToHome()">
+      <span class="logo-text">MediEase</span>
+    </div>
+  </div>
+  <div class="nav-right">
+    <button class="nav-btn" [class.active]="!showProfile" (click)="goToHome()">
+      <span>Home</span>
+    </button>
+    <button class="nav-btn" (click)="goToNetworkHospitals()">
+      <span>Hospitals</span>
+    </button>
+    <button class="nav-btn" [class.active]="showProfile" (click)="goToProfile()">
+      <span>Profile</span>
+    </button>
+    <button class="btn-logout" (click)="logout()">
+      <span>Logout</span>
+    </button>
+  </div>
+</nav>
+
+<!-- Success Message -->
+<div class="success-message" *ngIf="successMessage">
+  {{ successMessage }}
+</div>
+
+<!-- Main Content -->
+<div class="main-content" *ngIf="!showProfile">
+  <div class="container">
+    <!-- Welcome Section -->
+    <div class="welcome-section">
+      <h1>Welcome back, {{ userName }}!</h1>
+      <p>Manage your insurance and track your claims</p>
+    </div>
+
+    <!-- Insurance Card -->
+    <div class="insurance-card" *ngIf="hasInsurance && insurance">
+      <div class="card-header">
+        <h2>Your Current Package</h2>
+      </div>
+      <div class="card-body">
+        <div class="insurance-details">
+          <div class="detail-item">
+            <span class="detail-label">Package Name</span>
+            <span class="detail-value">{{ insurance.packageName }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Amount Remaining</span>
+            <span class="detail-value amount">{{ formatCurrency(insurance.amountRemaining) }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Insurance ID</span>
+            <span class="detail-value">#{{ insurance.insuranceId }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- No Insurance Message -->
+    <div class="no-insurance-card" *ngIf="!hasInsurance && !isLoadingInsurance">
+      <h3>Setting Up Your Insurance</h3>
+      <p>Redirecting you to select an insurance package...</p>
+    </div>
+
+    <!-- Loading Insurance -->
+    <div class="loading-card" *ngIf="isLoadingInsurance">
+      <div class="spinner"></div>
+      <p>Loading insurance details...</p>
+    </div>
+
+    <!-- Claim Section -->
+    <div class="claim-section" *ngIf="hasInsurance && insurance">
+      <div class="section-header">
+        <h2>Claim Amount</h2>
+      </div>
+      <div class="claim-button-container">
+        <button class="btn-claim" (click)="openClaimPopup()">
+          Submit New Claim
+        </button>
+      </div>
+    </div>
+
+    <!-- Claims History Section -->
+    <div class="claims-history-section">
+      <div class="section-header">
+        <h2>Claims History</h2>
+      </div>
+
+      <!-- Loading Claims -->
+      <div class="loading-card" *ngIf="isLoadingClaims">
+        <div class="spinner"></div>
+        <p>Loading claims...</p>
+      </div>
+
+      <!-- Claims Table -->
+      <div class="claims-table-container" *ngIf="!isLoadingClaims && claims.length > 0">
+        <table class="claims-table">
+          <thead>
+            <tr>
+              <th>Claim ID</th>
+              <th>Requested Amount</th>
+              <th>Approved Amount</th>
+              <th>Copay</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let claim of claims">
+              <td>#{{ claim.requestId }}</td>
+              <td class="amount-cell">{{ formatCurrency(claim.requestAmount) }}</td>
+              <td class="amount-cell">{{ claim.approvedAmount ? formatCurrency(claim.approvedAmount) : '-' }}</td>
+              <td class="amount-cell">{{ claim.copayAmount ? formatCurrency(claim.copayAmount) : '-' }}</td>
+              <td>
+                <span class="status-badge" [ngClass]="getStatusClass(claim.status)">
+                  {{ claim.status }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- No Claims Message -->
+      <div class="no-data-card" *ngIf="!isLoadingClaims && claims.length === 0">
+        <h3>No Claims Yet</h3>
+        <p>You haven't submitted any claims yet. Submit your first claim to get started!</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Profile Section -->
+<div class="profile-section" *ngIf="showProfile">
+  <app-user-profile (closeProfile)="closeProfile()"></app-user-profile>
+</div>
+
+<!-- Claim Popup -->
+<div class="popup-overlay" *ngIf="showClaimPopup" (click)="closeClaimPopup()">
+  <div class="popup-content" (click)="$event.stopPropagation()">
+    <div class="popup-header">
+      <h2>Submit New Claim</h2>
+      <button class="btn-close" (click)="closeClaimPopup()">×</button>
+    </div>
+    <div class="popup-body">
+      <div class="info-box" *ngIf="insurance">
+        <span class="info-icon">i</span>
+        <div class="info-text">
+          <strong>Available Amount:</strong> {{ formatCurrency(insurance.amountRemaining) }}
+        </div>
+      </div>
+
+      <!-- Hospital Selection -->
+      <div class="form-group">
+        <label for="hospital">Select Hospital *</label>
+        <select 
+          id="hospital" 
+          [(ngModel)]="selectedHospitalId"
+          (change)="onHospitalChange()"
+          [disabled]="isSubmittingClaim || isLoadingHospitals"
+        >
+          <option [value]="null" selected>Choose a hospital...</option>
+          <option *ngFor="let hospital of hospitals" [value]="hospital.id">
+            {{ hospital.hospitalName }} ({{ hospital.city }}, {{ hospital.state }}) - {{ hospital.copayPercentage }}% Copay
+          </option>
+        </select>
+      </div>
+
+      <!-- Hospital Copay Info -->
+      <div class="copay-info-box" *ngIf="selectedHospital">
+        <span class="info-icon">ℹ</span>
+        <div class="info-text">
+          <strong>{{ selectedHospital.hospitalName }}</strong>
+          <p>Copay: {{ selectedHospital.copayPercentage }}% (You pay this amount)</p>
+        </div>
+      </div>
+
+      <!-- Claim Amount -->
+      <div class="form-group">
+        <label for="claimAmount">Claim Amount (₹) *</label>
+        <input 
+          type="number" 
+          id="claimAmount" 
+          [(ngModel)]="claimAmount"
+          placeholder="Enter amount"
+          [disabled]="isSubmittingClaim"
+          min="0"
+          step="0.01"
+        />
+      </div>
+
+      <!-- Copay Calculation Display -->
+      <div class="copay-calculation" *ngIf="selectedHospital && claimAmount > 0">
+        <div class="calculation-row">
+          <span class="label">Requested Amount:</span>
+          <span class="value">{{ formatCurrency(claimAmount) }}</span>
+        </div>
+        <div class="calculation-row copay">
+          <span class="label">Copay ({{ selectedHospital.copayPercentage }}%):</span>
+          <span class="value">{{ formatCurrency(calculateCopay()) }}</span>
+        </div>
+        <div class="calculation-row approved">
+          <span class="label"><strong>Amount to be Approved:</strong></span>
+          <span class="value"><strong>{{ formatCurrency(calculateApprovedAmount()) }}</strong></span>
+        </div>
+      </div>
+
+      <div class="error-message" *ngIf="claimError">
+        <span class="error-icon">!</span>
+        {{ claimError }}
+      </div>
+    </div>
+    <div class="popup-footer">
+      <button class="btn-secondary" (click)="closeClaimPopup()" [disabled]="isSubmittingClaim">
+        Cancel
+      </button>
+      <button class="btn-primary" (click)="submitClaim()" [disabled]="isSubmittingClaim">
+        <span *ngIf="!isSubmittingClaim">Submit Claim</span>
+        <span *ngIf="isSubmittingClaim">Submitting...</span>
+      </button>
+    </div>
+  </div>
+</div>
